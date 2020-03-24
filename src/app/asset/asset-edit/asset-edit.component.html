@@ -1,0 +1,145 @@
+<kendo-dialog (close)="closeEditDialog()" [width]="600" [height]="700">
+    <kendo-dialog-titlebar>
+        <div style="width:100%;">
+            <div style="float:left;">
+                <span class="k-icon k-i-edit k-i-pencil"></span> Entry: {{assetType}}
+                <br><label *ngIf="error1">*** ASSET TYPE HAS NOT BEEN SET UP ***</label>
+            </div>
+            <div style="float:right;">
+                <button class="k-button gridButton" type="button" (click)="AssetHistoryClick()" style="width: 80px; height: 30px">History</button>
+            </div>
+       </div>
+
+    </kendo-dialog-titlebar>
+
+
+    <div class="row card-group" style="height:600px; overflow:auto">
+            
+        <div [ngClass]="'col-'+prop.width" *ngFor="let prop of objectProps  | sort; let i = index">
+            <div [ngSwitch]="prop.type">
+
+                <div *ngSwitchCase="'Numeric'" align="left">
+                    <label>{{prop.label}}</label> <label style="color: red; font-size:x-large" *ngIf="GetRequiredMarker(prop)">*</label>
+                    <br>
+                    <kendo-numerictextbox (valueChange)="handleNumericChange($event,prop)" class="form-control" [(ngModel)]="+prop.value" [format]="'#'" required [disabled]="!prop.editable"></kendo-numerictextbox>
+                    <br>
+                    <br>
+                </div>
+
+                <div *ngSwitchCase="'Text'" align="left">
+                    <ng-container *ngIf="prop.label=='TagId'">
+                        <ng-container *ngIf="isAddAsset==true">
+                            <label>{{prop.label}}</label> <label style="color: red; font-size:x-large" *ngIf="true">*</label>
+                            <br>
+                            <input kendoTextBox [(ngModel)]="prop.value" style="width:100%" [disabled]="false" />
+                        </ng-container>
+                        <ng-container *ngIf="isAddAsset==false">
+                            <label>{{prop.label}}</label>
+                            <br>
+                            <input kendoTextBox [(ngModel)]="prop.value" style="width:100%" [disabled]="true" />
+                        </ng-container>
+                    </ng-container>
+                    <ng-container *ngIf="prop.label!='TagId' && prop.label!='Comments'">
+                        <label>{{prop.label}}</label> <label style="color: red; font-size: x-large" *ngIf=GetRequiredMarker(prop)>*</label>
+                        <br>
+                        <input kendoTextBox (ngModelChange)="handleTextareaChange($event,prop)" [(ngModel)]="prop.value" style="width:100%" disabled={{!prop.editable}} />
+                    </ng-container>
+                    <!-- This is a hack -->
+                    <ng-container *ngIf="prop.label=='Comments'">
+                        <label>{{prop.label}}</label> <label style="color: red; font-size: x-large" *ngIf=GetRequiredMarker(prop)>*</label>
+                        <br>
+                        <textarea class="k-textarea" (ngModelChange)="handleTextareaChange($event,prop)" [(ngModel)]="prop.value" style="width:100%" disabled={{!prop.editable}} maxlength="500"></textarea>
+                    </ng-container>
+                    <br>
+                    <br>
+                </div>
+
+                <div *ngSwitchCase="'radio'" align="left">
+                    <form class="k-form">
+                        <div class="k-form-field">
+                            <label *ngFor="let option of prop.options"> <label style="color: red; font-size:x-large" *ngIf="GetRequiredMarker(prop)">*</label>
+                            <input type="radio" name="rb" id="rb{{i}}" [value]="GetRadioValue(prop.options, prop.value)" class="k-radio" disabled={{!prop.editable}}>
+                            <label class="k-radio-label" for="rb{{i}}">{{option.text}}</label>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+
+                <div *ngSwitchCase="'Dropdown'" align="left">
+                    <label>{{prop.label}}</label> <label style="color: red; font-size:x-large" *ngIf="GetRequiredMarker(prop)">*</label>
+                    <br>
+                    <kendo-dropdownlist [data]="prop.options" [defaultItem]="GetSelectedValue(prop)" [textField]=" 'text' " [valueField]=" 'value' " (valueChange)="handleDropdownChange($event, prop)" [disabled]="!prop.editable">
+                    </kendo-dropdownlist>
+                    <br>
+                    <br>
+                </div>
+
+                <div *ngSwitchCase="'upload'" align="left">
+                    <label>{{prop.label}}</label> <label style="color: red; font-size:x-large" *ngIf="GetRequiredMarker(prop)">*</label>
+                    <br>
+                    <kendo-upload saveUrl="{{serverPath}}/api/asset/assetbyId" [removeUrl]="uploadRemoveUrl" [(ngModel)]="prop.value" disabled={{!prop.editable}}></kendo-upload>
+                    <br>
+                    <br>
+                </div>
+
+
+
+                <div *ngSwitchCase="'checkbox'" align="left">
+                    <label>{{prop.label}}</label> <label style="color: red; font-size:x-large" *ngIf="GetRequiredMarker(prop)">*</label>
+                    <br>
+                    <input type="checkbox" id="cbox" class="k-checkbox" [(ngModel)]="prop.value" disabled={{!prop.editable}}>
+                    <label class="k-checkbox-label" for="cbox"></label>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <kendo-dialog-actions>
+        <button kendoButton (click)="UpdateAsset(objectProps)" *ngIf="!error1">Save</button>
+        <button kendoButton (click)="closeEditDialog()" primary="true">Cancel</button>
+    </kendo-dialog-actions>
+</kendo-dialog>
+
+
+<!-- *************************************************** -->
+<!-- Asset History Dialog -->
+<!-- *************************************************** -->
+<kendo-dialog *ngIf="openAssetHistory" title="Asset History: {{this.currentAssetInfo.tagId}}" (close)="openAssetHistory=false" [minWidth]="250" [width]="1800" [height]="800">
+    <kendo-dialog-actions>
+
+        <kendo-grid #grid id="historyGrid" [height]="700" [kendoGridBinding]="assetHistory" [scrollable]="'scrollable'" filterable="menu" [resizable]="true">
+            <kendo-grid-column field="AuditAction" title="Action" width="80">
+            </kendo-grid-column>
+            <kendo-grid-column field="AuditDTM" title="Action Date" width="150">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                    {{dataItem.AuditDTM | date: 'MM/dd/yyy hh:mm a'}}
+                </ng-template>
+            </kendo-grid-column>
+            <kendo-grid-column field="UpdatedBy" title="Updated By" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="CheckedOutTo" title="Checked Out To" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="Market" title="Market" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="Facility" title="Facility" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="TagId" title="Tag ID" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="AssetType" title="Asset Type" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="Make" title="Make" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="Model" title="Model" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="AssetStatus" title="Status" width="100">
+            </kendo-grid-column>
+            <kendo-grid-column field="Comments" title="Comment" width="150">
+             </kendo-grid-column>
+        </kendo-grid>
+
+        <button kendoButton (click)="openAssetHistory=false" primary="true">Close</button>
+    </kendo-dialog-actions>
+    
+</kendo-dialog>
+

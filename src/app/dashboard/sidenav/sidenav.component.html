@@ -1,0 +1,18 @@
+<br>
+<div class="container h-90 p-2">
+    <div class="row flex-column p-0 mb-4" (click)="ToggleSelectedLink(i)" [ngClass]="{'menu':item.scale==='out'}" [@hoverlink]='item.scale' *ngFor="let item of sideItems; let i = index;">
+        <div class="col-12 text-center" class="d-flex align-items-center justify-content-center">
+            <i *ngIf="item.disabled"> </i>
+            <i *ngIf="!item.disabled" class="{{item.icon}}" [routerLink]="[item.link]"></i>
+        </div>
+        <div class="col-12 text-center">
+            <div class="d-none d-lg-block">
+                <a *ngIf="item.disabled"> </a>
+                <a *ngIf="!item.disabled" [routerLink]="[item.link]" [ngClass]="{'menu':item.scale==='out'}">{{item.label}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- <div class="qlogo">
+    <img src="../../assets/images/quantaLogoedit.png " class="img-fluid">
+</div> -->

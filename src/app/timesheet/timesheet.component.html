@@ -1,0 +1,143 @@
+<div class="d-flex p-0 flex-row d-flex justify-content-md-end ">
+    <div class="self-align-center text-dark"><label>Kronos Submitted? </label>
+        <kendo-switch [(ngModel)]="kronosSubmitted" [onLabel]="'Yes'" [offLabel]="'No'" (click)="SetKronosStatus()"></kendo-switch>
+    </div>
+
+</div>
+<br>
+<div class="well">
+    <fieldset class="scheduler-border">
+        <legend class="scheduler-border">Search Criteria </legend>
+        <div class="row">
+            <div class="col-md-12">
+                <kendo-datepicker class="p-1" [(value)]="beginningOfWeek" (valueChange)="handleDatePickerChange($event)"></kendo-datepicker>
+                <input kendoTextBox class="p-1" [(ngModel)]="dateRange" disabled="disabled" />
+                <button kendoButton class="ml-1" [primary]="true" (click)="Clear()">
+                    Clear
+                </button>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                <kendo-dropdownlist class="p-1" style="width: 400px;" [data]="kronosUsers" [(ngModel)]="selectedUserName" (selectionChange)="selectionChange($event)">
+                </kendo-dropdownlist>
+                <button kendoButton [primary]="true" (click)="GetTimeSheet()"> Search</button>
+            </div>
+        </div>
+    </fieldset>
+
+
+</div>
+
+<div *ngIf="showGrid">
+    <kendo-grid class="gr" [rowClass]="rowCallback" #grid [data]="gridData" (edit)="editHandler($event)" (cancel)="cancelHandler($event)" (save)="saveHandler($event)" (remove)="removeHandler($event)" (add)="addHandler($event)" [height]="550" [scrollable]="'scrollable'">
+        <ng-template kendoGridToolbarTemplate>
+            <div class="d-flex justify-content-end mr-4 pr-4">
+                <button class="addbutton" kendoGridAddCommand (click)="CreateNewTimesheet()">Create Record</button>
+            </div>
+        </ng-template>
+        <kendo-grid-column field="category" title="Category" width="80">
+            <ng-template kendoGridEditTemplate let-dataItem="dataItem" let-column="column">
+                <kendo-dropdownlist [disabled]="isDisabledCategory" [class.disabled]="isDisabledCategory" [data]="dataCategory" [value]="selectedCategory" [textField]="'categoryName'" [valueField]="'categoryId'" (valueChange)="handleCategoryChange($event)">
+                </kendo-dropdownlist>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="project" title="Project" width="80">
+            <ng-template kendoGridEditTemplate let-dataItem="dataItem" let-column="column">
+                <kendo-dropdownlist [disabled]="isDisabledProjects" [class.disabled]="isDisabledProjects" [data]="dataResultProjects" [value]="selectedProject" [textField]="'projectName'" [valueField]="'projectId'" (valueChange)="handleProjectChange($event)">
+                </kendo-dropdownlist>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="task" title="Task" width="80">
+            <ng-template kendoGridEditTemplate let-dataItem="dataItem" let-column="column">
+                <kendo-dropdownlist [disabled]="isDisabledTasks" [class.disabled]="isDisabledTasks" [data]="dataResultTasks" [value]="selectedTask" [textField]="'taskName'" [valueField]="'taskId'" (valueChange)="handleTaskChange($event)">
+                </kendo-dropdownlist>
+            </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="saturday" title="Saturday" width="45">
+            <ng-template kendoGridEditTemplate let-column="column" let-isNew="isNew">
+                <kendo-numerictextbox [decimals]="2" [disabled]="textboxDisabled" [min]="0" [max]="24" [(ngModel)]="newTimesheet.Saturday" [autoCorrect]="true" [format]="2"></kendo-numerictextbox>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                {{GetColumTotal(column.field)}}
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="sunday" title="Sunday" width="45">
+            <ng-template kendoGridEditTemplate let-column="column" let-isNew="isNew">
+                <kendo-numerictextbox [decimals]="2" [disabled]="textboxDisabled" [min]="0" [max]="24" [(ngModel)]="newTimesheet.Sunday" [autoCorrect]="true" [format]="2"></kendo-numerictextbox>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                {{GetColumTotal(column.field)}}
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="monday" title="Monday" width="45">
+            <ng-template kendoGridEditTemplate let-column="column" let-isNew="isNew">
+                <kendo-numerictextbox [decimals]="2" [disabled]="textboxDisabled" [min]="0" [max]="24" [(ngModel)]="newTimesheet.Monday" [autoCorrect]="true" [format]="2"></kendo-numerictextbox>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                {{GetColumTotal(column.field)}}
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="tuesday" title="Tuesday" width="45">
+            <ng-template kendoGridEditTemplate let-column="column" let-isNew="isNew">
+                <kendo-numerictextbox [decimals]="2" [disabled]="textboxDisabled" [min]="0" [max]="24" [(ngModel)]="newTimesheet.Tuesday" [autoCorrect]="true" [format]="2"></kendo-numerictextbox>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                {{GetColumTotal(column.field)}}
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="wednesday" title="Wednesday" width="45">
+            <ng-template kendoGridEditTemplate let-column="column" let-isNew="isNew">
+                <kendo-numerictextbox [decimals]="2" [disabled]="textboxDisabled" [min]="0" [max]="24" [(ngModel)]="newTimesheet.Wednesday" [autoCorrect]="true" [format]="2"></kendo-numerictextbox>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                {{GetColumTotal(column.field)}}
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="thursday" title="Thursday" width="45">
+            <ng-template kendoGridEditTemplate let-column="column" let-isNew="isNew">
+                <kendo-numerictextbox [decimals]="2" [disabled]="textboxDisabled" [min]="0" [max]="24" [(ngModel)]="newTimesheet.Thursday" [autoCorrect]="true" [format]="2"></kendo-numerictextbox>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                {{GetColumTotal(column.field)}}
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="friday" title="Friday" width="45">
+            <ng-template kendoGridEditTemplate let-column="column" let-isNew="isNew">
+                <kendo-numerictextbox [decimals]="2" [disabled]="textboxDisabled" [min]="0" [max]="24" [(ngModel)]="newTimesheet.Friday" [autoCorrect]="true" [format]="2"></kendo-numerictextbox>
+            </ng-template>
+            <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                {{GetColumTotal(column.field)}}
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column [class]="{'totalcolumn': true}" field="total" title="Total" width="30">
+            <ng-template kendoGridEditTemplate let-column="column" let-isNew="isNew">
+                <p [ngClass]="{'pastforty': OverForty()}" style="text-align: center"></p>
+                {{GetWeeklyTotal()}}
+            </ng-template>
+            <ng-template kendoGridFooterTemplate let-column let-columnIndex="columnIndex">
+                <p [ngClass]="{'pastforty': GetColumTotal(column.field) > 40}" style="text-align: left">
+                    {{GetColumTotal(column.field)}}</p>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-command-column width="75">
+            <ng-template kendoGridCellTemplate let-isNew="isNew">
+                <div class="d-flex flex-row-reverse nowrap justify-content-center">
+
+                    <button class="commandbutton" kendoGridRemoveCommand>Remove</button>
+
+
+                    <button class="commandbutton" kendoGridEditCommand [disabled]="editMode">Edit</button>
+
+
+                    <button class="commandbutton" kendoGridCancelCommand>{{ isNew ? 'Discard' : 'Cancel' }}</button>
+
+                    <button class="commandbutton" kendoGridSaveCommand [disabled]="addMode">{{ isNew ? 'Add' : 'Update' }}</button>
+                </div>
+            </ng-template>
+        </kendo-grid-command-column>
+    </kendo-grid>
+</div>
+<div kendoDialogContainer></div>

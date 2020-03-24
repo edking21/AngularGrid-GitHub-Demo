@@ -1,0 +1,132 @@
+<kendo-dialog title="Dropdown Options" (close)="closeAEdropdowns()" [minWidth]="250" [width]="1050">
+  <kendo-dialog-actions>
+      <button kendoButton (click)="closeAEdropdowns()" primary="true">Cancel</button>
+  </kendo-dialog-actions>
+
+  <table>
+    <TR>
+      <TD>
+        <div>
+          Choose Asset Type<br>
+          <kendo-dropdownlist [data]="assetTypes" [textField]=" 'text' " [valueField]=" 'value' "  (valueChange)="AssetTypeChanged($event, 0)" >
+          </kendo-dropdownlist>
+        </div>
+      </TD>
+      <TD width="75px"></TD>
+      <TD>
+        <div>
+          Choose Element<br>
+          <kendo-dropdownlist [data]="assetElements" [textField]=" 'elementName' " [valueField]=" 'elementId' " [value]="elementTextShown()" (valueChange)="ElementChanged($event)">
+          </kendo-dropdownlist>
+          <!-- [defaultItem]="defaultAssetElement()" -->
+          <!-- [value]="df(0)" -->
+          <!-- [(ngModel)]="assetElements" -->
+         </div>
+      </TD>
+      <TD>
+          <!--  -->
+      </TD>
+    </TR>
+  </table>
+  <br><BR>
+
+
+  <!-- ====================== -->
+
+  <table> <!-- main table -->
+    <TR> <!-- main table row -->
+      <TD valign="top"> <!-- main table element options left side -->
+        <table>
+          <!-- header -->
+          <table>
+            <TR><TD bgcolor="lightblue" colspan="3">Element Options</TD></TR>
+            <TR bgcolor="lightblue">
+              <TD width="100px">Action</TD>
+              <TD width="200px">Description</TD>
+              <TD width="100px" align="center">Inactive</TD>
+            </TR>
+          </table>
+            <div *ngFor="let prop of assetElementOptions  ">
+              <!-- Element options -->
+              <TR>
+                <TD width="100px">
+                    <button kendoButton (click)="EditElementOption(prop)" style="background-color:lightcoral" *ngIf="prop.enabled">Edit</button>
+                    <button kendoButton (click)="UpdateElementOption(prop)" style="background-color:lightcoral" *ngIf="!prop.enabled">Save</button>
+                </TD>
+                <TD width="200px">
+                  <input KendoTextBox [value]="prop.text" [(ngModel)]="prop.text" [disabled]="prop.enabled" />
+                </TD>
+                <TD width="100px" align="center">
+                  <input type="checkbox" [(ngModel)]="prop.inactive" style="width:100px" [disabled]="prop.enabled" />
+                </TD>
+              </TR>
+              </div>
+            <p *ngIf="ModelMessage" style="background-color:lightcoral">Models Are A Subset of Make<br>Choose A Make First</p>
+            <!-- Add element options -->
+            <div>
+              <TR><TD>----------</TD> <TD>-------------------------</TD> <TD>----------</TD></TR>  <!-- space -->
+              <TR>
+                <TD width="100px">
+                    <button kendoButton (click)="AddElementOption()" style="background-color:lightcoral">Add</button>
+                </TD>
+                <TD width="200px">
+                    <input KendoTextBox [(ngModel)]="newAssetElement.newDescription" />
+                </TD>
+                <TD width="100px">
+                    <!-- <input type="checkbox" style="width:100px" [(ngModel)]="newAssetElement.newInactive" /> -->
+                </TD>
+              </TR>
+            </div>
+        </table>
+      </TD> <!-- main table element options left side -->
+      <!-- ========================================================================================================= -->
+      <TD width="100px"></TD>
+      <!-- ========================================================================================================= -->
+      <TD valign="top">  <!-- main table model options right side -->
+        <table>
+            <!-- header -->
+            <table *ngIf="ModelVisible">
+              <TR bgcolor="lightyellow"><TD colspan="3">Model Options</TD></TR>
+              <TR bgcolor="lightyellow">
+                <TD width="100px">Action</TD>
+                <TD width="200px">Description</TD>
+                <TD width="100px" align="center">Inactive</TD> 
+              </TR>
+            </table>
+              <div *ngFor="let prop of assetElementModelOptions  ">
+                <!-- Element options -->
+                <TR>
+                  <TD width="100px">
+                      <button kendoButton (click)="EditModelOption(prop)" style="background-color:lightcoral" *ngIf="prop.enabled">Edit</button>
+                      <button kendoButton (click)="UpdateModelOption(prop)" style="background-color:lightcoral" *ngIf="!prop.enabled">Save</button>
+                  </TD>
+                  <TD width="200px">
+                    <input KendoTextBox [value]="prop.text" [(ngModel)]="prop.text" [disabled]="prop.enabled" />
+                  </TD>
+                  <TD width="100px" align="center">
+                    <input type="checkbox" [(ngModel)]="prop.inactive" style="width:100px" [disabled]="prop.enabled" />
+                  </TD>
+                </TR>
+              </div>
+              <!-- Add model options -->
+              <div *ngIf="ModelVisible">
+                  <TR><TD>----------</TD> <TD>-------------------------</TD> <TD>----------</TD></TR>  <!-- space -->
+                  <TR>
+                    <TD width="100px">
+                        <button kendoButton (click)="AddElementModelOption()" style="background-color:lightcoral">Add</button>
+                    </TD>
+                    <TD width="200px">
+                        <input KendoTextBox [(ngModel)]="newAssetElementModel.newDescription" />
+                    </TD>
+                    <TD width="100px">
+                        <!-- <input type="checkbox" style="width:100px" [(ngModel)]="newAssetElementModel.newInactive" /> -->
+                    </TD>
+                  </TR>
+                </div>
+            </table>
+      </TD> <!-- main table model options right side -->
+    </TR> <!-- main table row -->
+  </table> <!-- main table -->
+
+
+</kendo-dialog>

@@ -1,0 +1,56 @@
+.gridButton {
+    min-width: 75%;
+    border-radius: 5px;
+    box-shadow: 0px 17px 10px -10px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: all ease-in-out 300ms;
+}
+
+.gridButton:hover {
+    box-shadow: 0px 37px 20px -20px rgba(0, 0, 0, 0.2);
+    transform: translate(0px, 0px) scale(1.1);
+    border-color: red;
+}
+
+.k-button.exporttoexcel {
+    border-radius: 5px;
+}
+
+.k-grid .no-padding {
+    padding: 0;
+}
+
+.whole-cell {
+    display: block;
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+.k-grid.k-widget {
+    background-color: #e9edf1
+}
+
+#myGrid tbody tr:hover {
+    background-color: #6194d6;
+    color: white
+}
+
+.k-alt.k-master-row.ng-star-inserted.k-state-selected,
+.k-master-row.ng-star-inserted.k-state-selected {
+    background-color: #4a6486;
+    color: white
+}
+
+.k-header.k-header.k-grid-toolbar.ng-star-inserted {
+    background-color: #e9edf1
+}
+
+.k-grid-header-wrap {
+    background-color: #314c70;
+    color: white
+}
+
+// @import "~@progress/kendo-theme-bootstrap/scss/all";
+.disabled {
+    border: solid 2px red;
+}

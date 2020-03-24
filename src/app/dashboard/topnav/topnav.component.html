@@ -1,0 +1,48 @@
+<div class="flex-container nowrap pl-4 pt-1 pr-4 p-1">
+    <div class="flex-row  pl-4 pr-4">
+        <div class="d-flex align-items-center justify-content-end  ml-3">
+            <div class="mr-auto align-items-center ml-4"><img src="../../assets/images/angularjs_75.png" class="img-fluid logo"></div>
+            <!-- <div class="d-none d-md-block">
+                <span [hidden]="!searchMode" class="k-textbox k-space-right mr-4 pt-0 pb-0">
+                      <input  kendoTextBox width="100" class="search" type="text" value="Search...." />
+                  <a class="k-icon k-i-search" (click)="searchMode" >&nbsp;</a>
+                </span>
+            </div>
+            <div class="d-flex ml-4  mr-2">
+                <div class="p-2 d-none d-md-block "><i (click)="searchMode = !searchMode" class="fa fa-search fa-2x" aria-hidden="true"></i>
+                </div>
+                <div (click)="ShowToasters()" class="p-2 d-none d-md-block"><i class="fa fa-bell fa-2x" aria-hidden="true"></i><span *ngIf="toast.length > 0" class="badge badge-light">{{toast.length}}</span>
+                </div>
+            </div> -->
+            <div class="d-flex mt-1 pr-1">
+                <kendo-dropdownbutton (itemClick)="onItemClick($event)" [class.hoverButton]="mouseOvered" (mouseout)="mouseOvered=false" (mouseover)="mouseOvered=true" class="k-button profilebutton" [data]="settings">
+                    <img src="../../../assets/images/noavatar.jpg" class="img-fluid profileimage">
+                </kendo-dropdownbutton>
+            </div>
+            <div class="d-flex-column mr-4 pb-2">
+                <div class="d-none d-md-block">
+                    {{userName}}
+                </div>
+                <!-- <div class="d-none d-md-block">
+                    Admin
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<kendo-dialog *ngIf="openSupportDialog" (close)="openSupportDialog = false" [minWidth]="250" [width]="450">
+    <kendo-dialog-titlebar>
+        <div style="text-align: center">
+            <span class="fa fa-support"></span> Support Information
+        </div>
+    </kendo-dialog-titlebar>
+    <div class="spanwrap">
+        <span>Email: </span><a target="_blank" [href]="'mailto:support@ques.com'">support@ques.com</a><br>
+        <span>Contact: +1(314)-619-3171</span><br>
+        <span>Support Hours: Monday - Friday 6:00am - 6:00pm</span>
+    </div>
+    <kendo-dialog-actions>
+        <button kendoButton (click)="openSupportDialog = false">Close</button>
+    </kendo-dialog-actions>
+</kendo-dialog>

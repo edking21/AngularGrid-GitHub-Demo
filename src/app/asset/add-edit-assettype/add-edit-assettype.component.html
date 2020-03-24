@@ -1,0 +1,131 @@
+<kendo-dialog title="Asset Type" (close)="closeAEassetType()" [minWidth]="250" [width]="1050">
+  <kendo-dialog-actions>
+      <button kendoButton (click)="closeAEassetType()" primary="true">Cancel</button>
+  </kendo-dialog-actions>
+
+  <div>
+      Choose Asset Type To Edit or Choose New To Add<br>
+          <!-- <kendo-dropdownlist [data]="assetTypes" [textField]=" 'text' " [valueField]=" 'value' "  (selectionChange)="AssetTypeChanged($event)" [defaultItem]="defaultAssetType()" > -->
+            <kendo-dropdownlist [data]="assetTypes" [textField]=" 'text' " [valueField]=" 'value' "  (valueChange)="AssetTypeChanged($event)" [defaultItem]="defaultAssetType()" >
+            </kendo-dropdownlist>
+          <br><BR>
+   </div>
+
+   <div>
+     Description
+     <input kendoTextBox [(ngModel)]="vAssetType" />   
+     <button kendoButton (click)="AddAssetType(assetUIComponent)" style="background-color:lightcoral"    *ngIf="visibleAssetTypeButton">Add New Asset Type</button>
+     <button kendoButton (click)="UpdateAssetType(assetUIComponent)" style="background-color:lightcoral" *ngIf="!visibleAssetTypeButton">Update Asset Type</button>
+     Inactive
+     <input type="checkbox" [(ngModel)]="vAssetTypeInactive" />
+     <br><br>
+    </div>
+
+     <div  *ngIf="!visibleAssetTypeButton">
+
+    <!-- *********************************************** -->
+    <!-- Asset Element List  -->
+    <!-- *********************************************** -->
+    <!-- header -->
+     <table>
+        <TR bgcolor="lightblue">
+            <TD width="200px">Element Name</TD>
+            <TD width="200px">Label</TD>
+            <TD width="200px">Type</TD>
+            <TD width="100px" align="center">Required</TD>
+            <TD width="100px" align="center">Inactive</TD>
+            <TD width="100px">Width</TD>
+            <TD width="100px">Sort Order</TD>
+            </TR>
+     </table>
+     <!-- table -->
+    <table>
+        <div *ngFor="let prop of assetUIComponent  ">
+          <TR>
+            <TD width="200px">
+              <input KendoTextBox [value]="prop.elementName" [(ngModel)]="prop.elementName" [disabled]="true" />
+            </TD>
+            <TD width="200px">
+             <input KendoTextBox [value]="prop.label" [(ngModel)]="prop.label"/>
+            </TD>
+            <TD width="200px">
+              <kendo-dropdownlist [data]="ElementTypesList" [textField]=" 'text' " [valueField]=" 'value' "  [defaultItem]="GetSelectedElementType(prop)" (valueChange)="handleElementTypeChange($event, prop)" [disabled]="!prop.editable" > 
+              </kendo-dropdownlist>
+            </TD>
+            <TD width="100px" align="center">
+              <input type="checkbox" [(ngModel)]="prop.isRequired" disabled={{!prop.editable}} >
+            </TD>
+            <TD width="100px" align="center">
+              <input type="checkbox" [(ngModel)]="prop.inactive" >
+            </TD>
+            <TD width="100px">
+              <input KendoTextBox [value]="prop.width" [(ngModel)]="prop.width" style="width:100px" />
+            </TD>
+            <TD width="100px">
+              <kendo-numerictextbox [min]="0" [format]="'#'" [value]="prop.sortOrder" [(ngModel)]="prop.sortOrder" style="width:100px" ></kendo-numerictextbox>
+            </TD>
+          </TR>
+        </div>
+    </table>
+    <br>
+
+    <!-- *********************************************** -->
+    <!-- Add New custom element -->
+    <!-- *********************************************** -->
+    <!-- header -->
+    <table>
+      <TR bgcolor="lightyellow">
+          <TD width="200px">Add Asset Type Elements</TD>
+          <TD width="200px"></TD>
+          <TD width="200px"></TD>
+          <TD width="100px"></TD>
+          <TD width="100px"></TD>
+          <TD width="100px"></TD>
+          <TD width="100px"></TD>
+          </TR>
+      <TR bgcolor="lightyellow">
+          <TD width="200px">Element Name</TD>
+          <TD width="200px">Label</TD>
+          <TD width="200px">Type</TD>
+          <TD width="100px" align="center">Required</TD>
+          <TD width="100px" align="center">Inactive</TD>
+          <TD width="100px">Width</TD>
+          <TD width="100px">Sort Order</TD>
+          </TR>
+   </table>
+   <!-- table -->
+   <table>
+        <TR>
+          <TD width="200px">
+            <input KendoTextBox [(ngModel)]="newAssetTypeElement.newElement" />
+          </TD>
+          <TD width="200px">
+           <input KendoTextBox [(ngModel)]="newAssetTypeElement.newLabel" />
+          </TD>
+          <TD width="200px">
+            <kendo-dropdownlist [data]="ElementTypesList" [textField]=" 'text' " [valueField]=" 'value' " (valueChange)="handleElementTypeChange2($event)" > 
+            </kendo-dropdownlist>
+          </TD>
+          <TD width="100px" align="center">
+            <input type="checkbox"  [(ngModel)]="newAssetTypeElement.newRequired" >
+          </TD>
+          <TD width="100px" align="center">
+            <input type="checkbox"  [(ngModel)]="newAssetTypeElement.newInactive" >
+          </TD>
+          <TD width="100px">
+            <input KendoTextBox [(ngModel)]="newAssetTypeElement.newWidth" style="width:100px"/>
+           </TD>
+          <TD width="100px">
+            <kendo-numerictextbox [min]="0" [format]="'#'" [(ngModel)]="newAssetTypeElement.newSort" style="width:100px" ></kendo-numerictextbox>
+          </TD>
+        </TR>
+  </table>
+  
+  <button kendoButton (click)="AddElement(assetUIComponent)" style="background-color:lightcoral">Add New Element</button>
+  <br>
+  <br>
+
+    </div>
+
+
+  </kendo-dialog>

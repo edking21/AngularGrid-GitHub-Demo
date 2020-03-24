@@ -1,0 +1,220 @@
+<kendo-grid #grid id="myGrid" [height]="690" [sortable]="true" [kendoGridBinding]="gridData" [kendoGridSelectBy]="SelectionKey" [pageSize]="pageSize" [pageable]="isPagable" (selectionChange)="SelectedRows($event)" [skip]="state.skip" [filter]="state.filter" [scrollable]="'scrollable'"
+    filterable="menu" (dataStateChange)="dataStateChange($event)" (sortChange)="sortChangeEvent($event)" (pageChange)="pageChange($event)"  (selectedKeysChange)="onSelectedKeysChange($event)" [rowSelected]="isRowSelected" (filterChange)="handleFilter($event)">
+    <ng-template kendoGridToolbarTemplate>
+        <div class="d-flex flex-row justify-content-center p-2 w-100">
+            <input kendoTextBox class="w-25 border border-dark" [disabled]="assets.length === 0" [class.disabled]="assets.length === 0" (change)="handleSearchFilter(searchText)" [(ngModel)]="searchText" [placeholder]="'Search an Asset...'" />
+        </div>
+        <div class="row m-2">
+            <div class="col-md-2 col-sm-4 text-center ">
+                <button class="k-button gridButton" (click)="AddAsset()">Add</button>
+            </div>
+            <div class="col-md-2 col-sm-4 text-center">
+                <button class="k-button gridButton" (click)="ProcessAsset($event)">Remove</button>
+            </div>
+            <div class="col-md-2 col-sm-4 text-center">
+                <button class="k-button gridButton" (click)="ProcessAsset($event)">Check In</button>
+            </div>
+            <div class="col-md-2 col-sm-4 text-center">
+                <button class="k-button gridButton" (click)="ProcessAsset($event)">Check Out</button>
+            </div>
+            <div class="col-md-2 col-sm-4 text-center">
+                <button class="k-button gridButton" (click)="ProcessAsset($event)">Mark Defective</button>
+            </div>
+            <div class="col-md-2 col-sm-4 text-center ">
+                <button class="k-button gridButton" (click)="EditAsset()">Edit</button>
+            </div>
+        </div>
+    </ng-template>
+    <!-- [state]="selectAllState" (selectAllChange)="onSelectAllChange($event)" -->
+    <!-- <kendo-grid-checkbox-column showSelectAll="true"  width="40" (change)="onSelectAllChange()" ></kendo-grid-checkbox-column> -->
+    <kendo-grid-checkbox-column width="40">
+        <ng-template kendoGridHeaderTemplate>
+            <input class="k-checkbox" id="selectAllCheckboxId" kendoGridSelectAllCheckbox
+                [state]="selectAllState"
+                (selectAllChange)="onSelectAllChange($event)">
+            <label class="k-checkbox-label" for="selectAllCheckboxId"></label>
+        </ng-template>
+    </kendo-grid-checkbox-column>
+
+    <kendo-grid-column field="tagId" title="TagId" width="70">
+    </kendo-grid-column>
+    <kendo-grid-column field="facility" title="Facility" width="70">
+    </kendo-grid-column>
+    <kendo-grid-column field="assetType" title="Type" width="70">
+    </kendo-grid-column>
+    <kendo-grid-column field="make" title="Make" width="70">
+    </kendo-grid-column>
+    <kendo-grid-column field="model" title="Model" width="80">
+    </kendo-grid-column>
+    <kendo-grid-column field="createdBy" title="Created By" width="90">
+    </kendo-grid-column>
+    <kendo-grid-column field="checkedOutTo" title="Checked Out To" width="110" hidden="true">
+    </kendo-grid-column>
+    <kendo-grid-column field="checkedOutToDetails" title="Checked Out To Details" width="110">
+    </kendo-grid-column>
+    <!-- <kendo-grid-column field="updatedDTMFormatted" title="Date Updated" width="90">
+    </kendo-grid-column> --> -->
+    <kendo-grid-column field="updatedDTM" title="Date Updated" width="90" >
+        <ng-template kendoGridCellTemplate let-dataItem>
+            {{dataItem.updatedDTM | date: 'MM/dd/yyy hh:mm a'}}
+        </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="assetStatus" title="Status" width="80">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            <span class="whole-cell" [style.backgroundColor]="colorCode(dataItem.assetStatus)">
+                {{ dataItem.assetStatus }}
+            </span>
+        </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-command-column title="Comments" width="50">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            <button kendoButton (click)="ViewComments(dataItem)" [class.disabled]="dataItem.comments === ''" [disabled]="dataItem.comments === ''" class="k-primary">
+                <i class="fa fa-comments" aria-hidden="true"></i>
+            </button>
+        </ng-template>
+    </kendo-grid-command-column>
+    <ng-template kendoGridDetailTemplate let-dataItem>
+        <div *ngFor="let asset of dataItem.assetElements">
+            {{asset?.label}} : {{asset?.valueText}}
+        </div>
+    </ng-template>
+    <ng-template kendoPagerTemplate let-totalPages="totalPages" let-currentPage="currentPage">
+        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+        <kendo-pager-numeric-buttons [buttonCount]="10"></kendo-pager-numeric-buttons>
+        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+        <kendo-pager-page-sizes [pageSizes]="[5, 10, 40]"></kendo-pager-page-sizes>
+        <kendo-pager-info></kendo-pager-info>
+        <div class="row ml-2">
+            <div class="col text-center">
+                <button type="button" class="k-button bg-success exporttoexcel" (click)="CreateTempForExcel()">
+                    <i class="fa fa-file-excel-o fa-2x" aria-hidden="true"></i>&nbsp; Export To Excel
+                </button>
+            </div>
+        </div>
+
+        <div class="row ml-2">
+            <div class="col text-center">
+                <button type="button" class="k-button bg-success " (click)="AssetSettings()">
+                    <i class="fa fa-wrench fa-2x" aria-hidden="true"></i>&nbsp; Settings
+                </button>
+            </div>
+        </div>
+
+    </ng-template>
+</kendo-grid>
+
+
+<!-- Call asset edit form -->
+<asset-edit *ngIf="opened" (editDialogClosed)="CloseDialog($event) " [currentAssetInfo]="currentAssetInfo" [assetTypes]="assetTypes" [users]="users" [isAddAsset]="isAddAsset"></asset-edit>
+
+
+
+<!-- confirmation dialog for Remove/Check In/Check Out/Mark Defective -->
+<kendo-dialog title="{{confirmationAction}} Asset" *ngIf="confirmationDialog" (close)="confirmationDialog = false" [minWidth]="350" [width]="550" [height]="550">
+    <p style="margin: 30px; text-align: center;">Are you sure you want to {{confirmationAction}} the following {{selectedRows.length === 1 ? "Item" : GetItemCount()}}?</p>
+    <div *ngIf="confirmationAction === 'check out'">
+        <strong>
+            <p style="margin: 30px; text-align: center; color:red;">Please Assign these item(s) to a user</p>
+        </strong>
+        <kendo-dropdownlist [(ngModel)]="assignee" [data]="users" [textField]=" 'UserName' " [valueField]=" 'UserName' ">
+        </kendo-dropdownlist>
+    </div>
+    <div *ngIf="confirmationAction === 'check in'">
+            <strong>
+                <p style="margin: 30px; text-align: center; color:red;">Please Assign these item(s) to a facility</p>
+            </strong>
+            <kendo-dropdownlist [(ngModel)]="selectedFacility" [data]="facilityList" [textField]=" 'text' " [valueField]=" 'value' ">
+            </kendo-dropdownlist>
+    </div>
+   
+    <br>
+    <div *ngFor="let asset of selectedRows ; let i = index">
+        {{i+1}} : {{asset.value.tagId}}
+    </div>
+    <kendo-dialog-actions>
+        <!-- <button kendoButton [class.disabled]="assignee.UserName === 'Select a User' && confirmationAction === 'check out'" [disabled]="assignee.UserName==='Select a User' && confirmationAction === 'check out'" (click)="SaveAssetAction(confirmationAction)">Continue</button> -->
+        <!-- <button kendoButton [class.disabled]="selectedFacility.text === '' && confirmationAction === 'check in'" [disabled]="selectedFacility.text==='' && confirmationAction === 'check in'" (click)="SaveAssetAction(confirmationAction)">Continue in</button> -->
+        <button kendoButton 
+            [class.disabled]="(selectedFacility.text === '' && confirmationAction === 'check in') || (assignee.UserName === 'Select a User' && confirmationAction === 'check out')" 
+            [disabled]      ="(selectedFacility.text===  '' && confirmationAction === 'check in') || (assignee.UserName === 'Select a User' && confirmationAction === 'check out')" 
+            (click)="SaveAssetAction(confirmationAction)">
+            Continue
+        </button>
+
+        <button kendoButton (click)="confirmationDialog=false " primary="true ">Cancel</button>
+    </kendo-dialog-actions>
+</kendo-dialog>
+
+
+<!-- Add asset Dialog -->
+<kendo-dialog *ngIf="openedAdd" title="Please Choose An Asset type" (close)="openedAdd=false" [minWidth]="250" [width]="450">
+    <kendo-dialog-actions>
+        <button kendoButton (click)="AddAssetContinue()">Continue</button>
+        <button kendoButton (click)="openedAdd=false" primary="true">Cancel</button>
+    </kendo-dialog-actions>
+
+    <div>
+        <kendo-dropdownlist [data]="assetTypes" [textField]=" 'text' " [valueField]=" 'value' " [(ngModel)]="selectedValue">
+        </kendo-dropdownlist>
+    </div>
+</kendo-dialog>
+
+<!-- Comment dialog -->
+<kendo-dialog *ngIf="openCommentDialog" title="Comments" (close)="openCommentDialog = false;" [minWidth]="250" [width]="450">
+    {{currentlySelectedComment}}
+    <kendo-dialog-actions>
+        <button kendoButton (click)="openCommentDialog = false;" primary="true">Close</button>
+    </kendo-dialog-actions>
+    <div>
+    </div>
+</kendo-dialog>
+
+<!-- settings Dialog -->
+<kendo-dialog *ngIf="openSettings" title="Settings" (close)="openSettings=false" [minWidth]="250" [width]="650">
+    <kendo-dialog-actions>
+        <button kendoButton (click)="openSettings=false" primary="true">Cancel</button>
+    </kendo-dialog-actions>
+
+    <div>
+        <button kendoButton (click)="FacilityAsset()" style="width:550px">Change User Facility</button><br>
+        <button kendoButton (click)="AddEditDropdowns()" style="width:550px">Add\Edit Dropdown Options</button><br>
+        <button kendoButton (click)="AddEditAssetType()" style="width:550px">Add\Edit Asset Type</button><br>
+        <!-- not going to use <button kendoButton (click)="xxx()" style="width:550px">Add Asset Details</button><br> -->
+        <!-- <button kendoButton (click)="xxx()" style="width:550px">Remove Asset Type</button><br> -->
+    </div>
+
+</kendo-dialog>
+
+
+<!-- facility Dialog -->
+<kendo-dialog *ngIf="openFacility" title="Facility" (close)="openFacility=false" [minWidth]="250" [width]="650">
+    <kendo-dialog-actions>
+        <button kendoButton (click)="saveFacility()">Save</button>
+        <button kendoButton (click)="openFacility=false" primary="true">Cancel</button>
+    </kendo-dialog-actions>
+
+    <div>
+        <div style="display: inline-block">
+            User<br>
+            <!-- <kendo-dropdownlist [data]="users" [textField]=" 'UserName' " [valueField]=" 'UserName' " [(ngModel)]="selectedUser" (selectionChange)="FacilityUserChanged($event)" [defaultItem]="defaultItem">  -->
+            <kendo-dropdownlist [data]="users" [textField]=" 'UserName' " [valueField]=" 'UserName' " [(ngModel)]="selectedUser" (selectionChange)="FacilityUserChanged($event)">
+            </kendo-dropdownlist>
+        </div>
+        <div style="width:50px; display: inline-block"></div>
+        <div style="display: inline-block">
+            Facility<br>
+            <!-- kendo-dropdownlist [data]="facilityList" [textField]=" 'text' " [valueField]=" 'value' " [(ngModel)]="selectedFacility" [defaultItem]="defaultItem"> -->
+            <kendo-dropdownlist [data]="facilityList" [textField]=" 'text' " [valueField]=" 'value' " [(ngModel)]="selectedFacility">
+            </kendo-dropdownlist>
+        </div>
+    </div>
+
+</kendo-dialog>
+
+<!-- Call asset edit form -->
+<add-edit-assettype *ngIf="openAEassetType" (close)="CloseAE($event) ">
+</add-edit-assettype>
+
+<!-- Call dropdown edit form -->
+<add-edit-dropdowns *ngIf="openAEdropdowns" (close)="CloseAEdropdowns($event) ">
+</add-edit-dropdowns>

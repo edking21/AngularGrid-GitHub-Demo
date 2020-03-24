@@ -1,0 +1,50 @@
+      a {
+          color: white;
+          font-family: Verdana, Geneva, sans-serif;
+          font-size: 16px;
+          text-decoration: none;
+          outline: none !important;
+      }
+      
+      a,
+      i {
+          outline: none !important;
+      }
+      
+      i {
+          color: white;
+          border: 0;
+      }
+      
+      .menu {
+          position: relative;
+          overflow: hidden;
+          border-radius: 5px;
+      }
+      
+      .menu:after {
+          content: "";
+          position: absolute;
+          top: -110%;
+          left: -210%;
+          width: 200%;
+          height: 200%;
+          opacity: 0;
+          transform: rotate(-15deg);
+          background: linear-gradient( to right, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.13) 77%, rgba(255, 255, 255, 0.5) 92%, rgba(255, 255, 255, 0.0) 100%);
+      }
+      
+      .menu:hover:after {
+          opacity: 1;
+          top: -35%;
+          left: -35%;
+          transition-property: left, top, opacity;
+          transition-duration: 1.5s, 1.5s, 0.15s;
+          transition-timing-function: ease;
+      }
+      
+      .qlogo {
+          position: absolute;
+          left: 30px;
+          bottom: 100px;
+      }
