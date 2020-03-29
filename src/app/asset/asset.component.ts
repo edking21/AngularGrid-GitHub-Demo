@@ -3,10 +3,12 @@ import {
   Component,
   OnInit,
   ViewChild,
-  ViewEncapsulation
+  ChangeDetectionStrategy
 } from "@angular/core";
 import { AssetService } from "./asset.service";
 import { ToastrService } from 'ngx-toastr';
+
+import { AssetCategoryService } from '../asset-categories/asset-category.service';
 
 import { AssetInfo } from "../models/AssetInfo";
 import { State, toDataSourceRequest } from "@progress/kendo-data-query";
@@ -15,13 +17,13 @@ import { GridColumn } from "../models/GridColumn";
 import { RowClassArgs, RowArgs } from "@progress/kendo-angular-grid";
 import { DataStateChangeEvent } from "@progress/kendo-angular-grid";
 import { SelectableOptions } from "../models/SelectableOptions";
-import { Subscription, ReplaySubject } from "rxjs";
+import { Subscription, Subject, EMPTY, BehaviorSubject, combineLatest } from "rxjs";
 import { AppService } from "../app.service";
 import { environment } from "../../environments/environment";
 import { AssetDesign } from "../models/AssetDesign";
 
 import { GridDataResult, PageChangeEvent, SelectAllCheckboxState } from '@progress/kendo-angular-grid';
-
+import { catchError, map } from "rxjs/operators";
 
 @Component({
   styleUrls: ["styles2.scss"],
@@ -29,6 +31,40 @@ import { GridDataResult, PageChangeEvent, SelectAllCheckboxState } from '@progre
   templateUrl: "./asset.component.html"
 })
 export class AssetComponent implements OnInit {
+  pageTitle = 'Asset List';
+  private errorMessageSubject = new Subject<string>();
+  errorMessage$ = this.errorMessageSubject.asObservable();
+
+  // Action stream
+  private categorySelectedSubject = new BehaviorSubject<number>(0);
+  categorySelectedAction$ = this.categorySelectedSubject.asObservable();
+
+  // Merge Data stream with Action stream
+  // To filter to the selected category
+  assets$ = combineLatest([
+    this.assetService.assetsWithAdd$,
+    this.categorySelectedAction$
+  ])
+    .pipe(
+      map(([assets, selectedCategoryId]) =>
+        assets.filter(product =>
+          selectedCategoryId ? product.categoryId === selectedCategoryId : true
+        )),
+      catchError(err => {
+        this.errorMessageSubject.next(err);
+        return EMPTY;
+      })
+    );
+
+  // // Categories for drop down list
+  categories$ = this.assetCategoryService.assetCategories$
+    .pipe(
+      catchError(err => {
+        this.errorMessageSubject.next(err);
+        return EMPTY;
+      })
+    );
+
   assetSubscribe = [];
   assetSubscribeAdd = [];
   @ViewChild("grid", { static: true }) grid;
@@ -259,6 +295,7 @@ export class AssetComponent implements OnInit {
   subscriptionAdd: Subscription;
   constructor(
     private assetService: AssetService,
+    private assetCategoryService: AssetCategoryService,
     private toastrService: ToastrService,
     private sanitizer: DomSanitizer,
     private appService: AppService

@@ -4,6 +4,7 @@
     "license": "MIT",
     "scripts": {
         "ng": "ng",
+        "mem": "ng s --port 4204",
         "local": "ng s -c local --port 4202",
         "dev": "ng s -c dev",
         "qa": "ng s -c qa",
@@ -77,6 +78,7 @@
         "@types/jasmine": "^3.4.5",
         "@types/jasminewd2": "^2.0.8",
         "@types/node": "^12.12.5",
+        "angular-in-memory-web-api": "^0.9.0",
         "codelyzer": "^5.0.1",
         "jasmine-core": "~3.5.0",
         "jasmine-spec-reporter": "~4.2.1",

@@ -5,18 +5,20 @@ import {
   HttpParams,
   HttpHeaders
 } from "@angular/common/http";
-import { throwError } from "rxjs";
+
+import { BehaviorSubject, combineLatest, EMPTY, from, merge, Subject, throwError, of } from 'rxjs';
+import { catchError, filter, map, mergeMap, scan, shareReplay, tap, toArray, switchMap } from 'rxjs/operators';
+
 import { environment } from "../../environments/environment";
 import { AssetInfo } from "../models/AssetInfo";
-import { catchError, tap } from "rxjs/operators";
 import { AssetElement } from "../models/AssetElement";
-import { Subject } from "rxjs/Subject";
 import { AssetUIComponent } from "../models/AssetUIComponent";
-import { BehaviorSubject } from "rxjs";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { dateFieldName } from "@telerik/kendo-intl";
 import { AssetHistory } from "../models/AssetHistory";
+import { Asset } from './asset';
+import { AssetCategoryService } from '../asset-categories/asset-category.service';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -24,17 +26,65 @@ const EXCEL_EXTENSION = '.xlsx';
 
 @Injectable()
 export class AssetService implements OnInit {
-  constructor(private http: HttpClient) { }
+  private assetsUrl = 'api/assets';
+
+  // All Assets
+  assets$ = this.http.get<Asset[]>(this.assetsUrl)
+    .pipe(
+      tap(data => console.log('Products', JSON.stringify(data))),
+      catchError(this.handleError)
+    );
+
+  // Combine products with categories
+  // Map to the revised shape.
+  assetsWithCategory$ = combineLatest([
+    this.assets$,
+    this.assetCategoryService.assetCategories$
+  ]).pipe(
+    map(([assets, categories]) =>
+      assets.map(asset => ({
+        ...asset,
+        price: asset.price * 1.5,
+        category: categories.find(c => asset.categoryId === c.id).name,
+        searchKey: [asset.productName]
+      }) as Asset)
+    ),
+    shareReplay(1)
+  );
+  
+  /*
+    Allows adding of products to the Observable
+  */
+
+  // Action Stream
+  private assetInsertedSubject = new Subject<Asset>();
+  assetInsertedAction$ = this.assetInsertedSubject.asObservable();
+
+  // Merge the streams
+  assetsWithAdd$ = merge(
+    this.assetsWithCategory$,
+    this.assetInsertedAction$
+  )
+    .pipe(
+      scan((acc: Asset[], value: Asset) => [...acc, value]),
+      catchError(err => {
+        console.error(err);
+        return throwError(err);
+      })
+    );
+
+  constructor(
+    private http: HttpClient,
+    private assetCategoryService: AssetCategoryService
+  ) { }
 
   private market = new BehaviorSubject<number>(null);
-
   private assetElementAnnouncedSources = new Subject<any>();
   assetElementAnnounceds$ = this.assetElementAnnouncedSources.asObservable();
   announceAssetElements(assetElements: AssetElement[]) {
     // announceAssetElements(assets: AssetDetail[]) {
     this.assetElementAnnouncedSources.next(assetElements);
   }
-
   private assetAddAnnouncedSources = new Subject<any>();
   assetAddAnnounceds$ = this.assetAddAnnouncedSources.asObservable();
   announceAssetAdd(assetElements: AssetElement[]) {
