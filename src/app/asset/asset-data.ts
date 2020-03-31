@@ -9,30 +9,30 @@ export class AssetData {
       marketId: 1,
       facilityId: 1,
       tagId: 1,
-      make: 'Ford',
-      model: 'Mustang',
+      make: 'ASUS',
+      model: 'Aspire 5',
       statusId: 1,
-      assetStatus: 'active'
+      assetStatus: 'Checked-Out'
     },
     {
       id: 2,
       marketId: 2,
       facilityId: 1,
       tagId: 1,
-      make: 'Chevy',
-      model: 'Malabu',
+      make: 'ASUS',
+      model: 'ZenBook',
       statusId: 1,
-      assetStatus: 'active'
+      assetStatus: 'Checked-Out'
     },
     {
       id: 3,
       marketId: 3,
       facilityId: 1,
       tagId: 1,
-      make: 'Dodge',
-      model: 'Charger',
+      make: 'ASUS',
+      model: 'Chromebook',
       statusId: 1,
-      assetStatus: 'active'
+      assetStatus: 'Checked-in'
     },
     {
       id: 4,
@@ -42,7 +42,7 @@ export class AssetData {
       make: 'Dell',
       model: 'Inspiron',
       statusId: 1,
-      assetStatus: 'active'
+      assetStatus: 'Checked-in'
     },
     {
       id: 5,
@@ -52,7 +52,7 @@ export class AssetData {
       make: 'Lenovo',
       model: 'C7',
       statusId: 1,
-      assetStatus: 'active'
+      assetStatus: 'Checked-out'
     },
     {
       id: 6,
@@ -62,17 +62,17 @@ export class AssetData {
       make: 'Lenova',
       model: 'B-22-44',
       statusId: 1,
-      assetStatus: 'active'
+      assetStatus: 'Checked-in'
     },
     {
       id: 7,
       marketId: 7,
       facilityId: 1,
       tagId: 1,
-      make: 'Logitech',
-      model: 'Keyboard',
+      make: 'Rosewill',
+      model: 'NEON K54 Keyboard',
       statusId: 1,
-      assetStatus: 'active'
+      assetStatus: 'Checked-out'
     },
     {
       id: 8,
