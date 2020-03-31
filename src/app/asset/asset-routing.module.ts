@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AssetComponent } from './asset.component';
+import { Asset2Component } from './asset2/asset2.component';
 
 
 const routes: Routes = [
   {
     path: '',
-    component: AssetComponent
+    component: Asset2Component
   }
 ];
 

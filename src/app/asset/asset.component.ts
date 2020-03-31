@@ -3,25 +3,28 @@ import {
   Component,
   OnInit,
   ViewChild,
-  ViewEncapsulation
+  ChangeDetectionStrategy
 } from "@angular/core";
 import { AssetService } from "./asset.service";
 import { ToastrService } from 'ngx-toastr';
 
+import { AssetCategoryService } from '../asset-categories/asset-category.service';
+
 import { AssetInfo } from "../models/AssetInfo";
+import { Asset } from '../asset/asset'
 import { State, toDataSourceRequest } from "@progress/kendo-data-query";
 import { AutoCompleteComponent } from '@progress/kendo-angular-dropdowns';
 import { GridColumn } from "../models/GridColumn";
 import { RowClassArgs, RowArgs } from "@progress/kendo-angular-grid";
 import { DataStateChangeEvent } from "@progress/kendo-angular-grid";
 import { SelectableOptions } from "../models/SelectableOptions";
-import { Subscription, ReplaySubject } from "rxjs";
+import { Subscription, Subject, EMPTY, BehaviorSubject, combineLatest } from "rxjs";
 import { AppService } from "../app.service";
 import { environment } from "../../environments/environment";
 import { AssetDesign } from "../models/AssetDesign";
 
 import { GridDataResult, PageChangeEvent, SelectAllCheckboxState } from '@progress/kendo-angular-grid';
-
+import { catchError, map } from "rxjs/operators";
 
 @Component({
   styleUrls: ["styles2.scss"],
@@ -29,6 +32,50 @@ import { GridDataResult, PageChangeEvent, SelectAllCheckboxState } from '@progre
   templateUrl: "./asset.component.html"
 })
 export class AssetComponent implements OnInit {
+  pageTitle = 'Asset List';
+  private errorMessageSubject = new Subject<string>();
+  errorMessage$ = this.errorMessageSubject.asObservable();
+  errorMessage = '';
+
+  // Action stream
+  private categorySelectedSubject = new BehaviorSubject<number>(0);
+  categorySelectedAction$ = this.categorySelectedSubject.asObservable();
+
+
+  assets$ = this.assetService.assets$
+    .pipe(
+      catchError(err => {
+        this.errorMessage = err;
+        return EMPTY;
+      })
+    );
+
+  // Merge Data stream with Action stream
+  // To filter to the selected category
+  // assets$ = combineLatest([
+  //   this.assetService.assetsWithAdd$,
+  //   this.categorySelectedAction$
+  // ])
+  //   .pipe(
+  //     map(([assets, selectedCategoryId]) =>
+  //       assets.filter(product =>
+  //         selectedCategoryId ? product.categoryId === selectedCategoryId : true
+  //       )),
+  //     catchError(err => {
+  //       this.errorMessageSubject.next(err);
+  //       return EMPTY;
+  //     })
+  //   );
+
+  // // Categories for drop down list
+  categories$ = this.assetCategoryService.assetCategories$
+    .pipe(
+      catchError(err => {
+        this.errorMessageSubject.next(err);
+        return EMPTY;
+      })
+    );
+
   assetSubscribe = [];
   assetSubscribeAdd = [];
   @ViewChild("grid", { static: true }) grid;
@@ -259,6 +306,7 @@ export class AssetComponent implements OnInit {
   subscriptionAdd: Subscription;
   constructor(
     private assetService: AssetService,
+    private assetCategoryService: AssetCategoryService,
     private toastrService: ToastrService,
     private sanitizer: DomSanitizer,
     private appService: AppService
@@ -449,9 +497,17 @@ export class AssetComponent implements OnInit {
   public isHidden(columnName: string): boolean {
     return this.hiddenColumns.indexOf(columnName) > -1;
   }
+  
+  sub: Subscription;
 
   ngOnInit() {
-    this.GetMarket();
+    this.sub = this.assetService.GetAssets(this.currentUser, this.marketId)
+      .subscribe(
+        assets => this.assets = assets,
+        error => this.errorMessage$ = error
+      )
+    // this.GetAssets();
+    // this.GetMarket();
   }
 
   public GetMarket() {
@@ -461,10 +517,10 @@ export class AssetComponent implements OnInit {
         this.assetService.SetTheMarket(market)
         //These calls must be here due to dependencies on GetMarket returning the MarketId from the DB.
         this.GetAssets();
-        this.GetUsers(this.marketId, false);
-        this.GetAssetTypes();
-        this.GetAssetManagers(this.marketId, false);
-        this.GetFacilityList(this.marketId);
+        // this.GetUsers(this.marketId, false);
+        // this.GetAssetTypes();
+        // this.GetAssetManagers(this.marketId, false);
+        // this.GetFacilityList(this.marketId);
       });
   }
 
@@ -500,23 +556,28 @@ export class AssetComponent implements OnInit {
     }
   }
 
+  asset2: any[] = [];
+
   GetAssets() {
     this.assetService.GetAssets(this.currentUser, this.marketId)
       .subscribe(
-        (assets: AssetInfo[]) => {
-          this.FormatDates(assets);
-          this.assets = assets;
-          this.gridData = this.assets;
-          for (let indx of Object.keys(this.assets[0])) {
-            this.columns.push({
-              field: indx,
-              title: this.GetTitle(indx),
-              hidden: false
-            });
-          }
-          //filter data if searchtext is set
-          this.handleSearchFilter(this.searchText);
-        });
+        assets => this.asset2 = assets,
+        error => this.errorMessage$ = error
+        // (assets: AssetInfo[]) => {
+        //   this.FormatDates(assets);
+        //   this.assets = assets;
+        //   this.gridData = this.assets;
+        //   for (let indx of Object.keys(this.assets[0])) {
+        //     this.columns.push({
+        //       field: indx,
+        //       title: this.GetTitle(indx),
+        //       hidden: false
+        //     });
+        //   }
+        //   //filter data if searchtext is set
+        //   this.handleSearchFilter(this.searchText);
+        // }
+        );
   }
 
 

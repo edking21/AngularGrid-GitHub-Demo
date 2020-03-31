@@ -6,7 +6,9 @@
 export const environment = {
   production: false,
   envName: 'dev',
-  serverPath:'http://localhost:57276/',
+  serverPath:'',
+  assetUrl: 'api/assets',
+  marketUrl: 'api/markets/1',
   tokenIssuerClient: "http://localhost:57276/",
   tokenIssuerPath: "http://localhost:57276/"
 // serverPath:'https://wadevutiliadmin.utilimap.com/',
