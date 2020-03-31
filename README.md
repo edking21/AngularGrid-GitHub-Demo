@@ -18,7 +18,7 @@ Uses a reactive approach by issuing the Common Pattern with an Async Pipe to pop
 
 ## In Memory Data Store
 
-* Optionally calls the in Memory DB when the RESTy API is not available.
+* Optionally calls the in Memory DB when the RESTfull API is not available.
 
 * Change between In Memory and REST with a single npm command.
 ```ts

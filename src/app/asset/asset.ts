@@ -1,12 +1,11 @@
 /* Defines the product entity */
 export interface Asset {
   id: number;
-  productName: string;
-  productCode?: string;
-  description?: string;
-  price?: number;
-  categoryId?: number;
-  quantityInStock?: number;
-  searchKey?: string[];
-  supplierIds?: number[];
+  marketId: number;
+  facilityId?: number;
+  tagId?: number;
+  make?: string;
+  model?: string;
+  statusId?: number;
+  assetStatus?: string;
 }

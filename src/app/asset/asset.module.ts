@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { AssetService } from "./asset.service";
+import { AssetService } from "./asset-main/asset.service";
 import { UploadModule } from '@progress/kendo-angular-upload';
 import { ButtonsModule } from "@progress/kendo-angular-buttons";
 import { DropDownsModule } from "@progress/kendo-angular-dropdowns";
@@ -16,8 +16,12 @@ import { GridModule } from "@progress/kendo-angular-grid";
 import { ExcelExportModule } from '@progress/kendo-angular-excel-export';
 import { HttpClientModule } from '@angular/common/http';
 
+// Imports for loading & configuring the in-memory web api
+import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { AppData } from '../app-data';
+
 import { HttpClientJsonpModule } from '@angular/common/http';
-import { AssetComponent } from "./asset.component";
+import { AssetComponent } from "./asset-main/asset.component";
 import { AssetAddComponent } from "./asset-add/asset-add.component";
 import { AssetEditComponent } from './asset-edit/asset-edit.component';
 import { ArraySortPipe } from '../pipes/array-sort-pipe.pipe';
@@ -27,12 +31,17 @@ import { AssetFacilityComponent } from './asset-facility/asset-facility.componen
 import { AddEditAssettypeComponent } from './add-edit-assettype/add-edit-assettype.component';
 import { AddEditDropdownsComponent } from './add-edit-dropdowns/add-edit-dropdowns.component';
 import { environment } from '../../environments/environment';
-import { Asset2Component } from './asset2/asset2.component';
 
 @NgModule({
   imports: [
     AssetRoutingModule,
     HttpClientModule, 
+    
+    environment.production ? [] :
+    InMemoryWebApiModule.forRoot(AppData, {
+      dataEncapsulation: false,
+      delay: 1000,
+      passThruUnknownUrl: true }),
 
     HttpClientJsonpModule,
     ReactiveFormsModule,
@@ -53,7 +62,6 @@ import { Asset2Component } from './asset2/asset2.component';
   declarations: [
     AssetAddComponent,
     AssetComponent,
-    Asset2Component,
     AssetEditComponent,
     ArraySortPipe,
     AssetFacilityComponent,

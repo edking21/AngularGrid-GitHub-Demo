@@ -8,9 +8,13 @@ export class AppData implements InMemoryDbService {
 
   createDb() {
     const assets = AssetData.assets;
+    let markets = [
+      { id: 1, num: 41},
+      { id: 2, num: 42}
+    ]
     // const productCategories = ProductCategoryData.categories;
     // const suppliers = SupplierData.suppliers;
+    return { assets, markets };
     // return { products, productCategories, suppliers };
-    return { assets };
   }
 }

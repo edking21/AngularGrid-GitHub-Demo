@@ -1,19 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
 import { Asset } from './../asset';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class Asset2Service {
-  private assetsUrl = 'api/assets';
-  
-  assets$ = this.http.get<Asset[]>(this.assetsUrl)
+export class AssetService {
+  assets$ = this.http.get<Asset[]>(environment.serverPath + environment.assetUrl )
     .pipe(
-        tap(data =>console.log('Assets: ', JSON.stringify(data))),
-        catchError(this.handleError)
+      // tap(data => console.log('Assets: ', JSON.stringify(data))),
+      catchError(this.handleError)
     );
 
   constructor(private http: HttpClient) { }

@@ -3,10 +3,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule} from '@angular/common/http';
 
-// Imports for loading & configuring the in-memory web api
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { AppData } from './asset/app-data';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppService } from './app.service';
 import { AppComponent } from './app.component';
@@ -34,13 +30,6 @@ import { environment } from '../environments/environment';
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule, 
-
-    environment.production ? [] :
-    InMemoryWebApiModule.forRoot(AppData, {
-      dataEncapsulation: false,
-      delay: 1000,
-      passThruUnknownUrl: true }),
-
 
     HttpModule,
     TimesheetModule,

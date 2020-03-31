@@ -5,13 +5,13 @@
 
 export const environment = {
   production: false,
-  envName: 'dev',
-  serverPath:'',
+  envName: 'mem',
+  serverPath: '',
   assetUrl: 'api/assets',
   marketUrl: 'api/markets/1',
   tokenIssuerClient: "http://localhost:57276/",
   tokenIssuerPath: "http://localhost:57276/"
-// serverPath:'https://wadevutiliadmin.utilimap.com/',
+  // serverPath:'https://wadevutiliadmin.utilimap.com/',
   //tokenIssuerClient: "https://devutportal.utilimap.com",
   //tokenIssuerPath: "https://wadevutportal.utilimap.com"
 };
