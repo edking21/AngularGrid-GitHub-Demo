@@ -16,10 +16,6 @@ import { GridModule } from "@progress/kendo-angular-grid";
 import { ExcelExportModule } from '@progress/kendo-angular-excel-export';
 import { HttpClientModule } from '@angular/common/http';
 
-// Imports for loading & configuring the in-memory web api
-// import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
-// import { AppData } from './app-data';
-
 import { HttpClientJsonpModule } from '@angular/common/http';
 import { AssetComponent } from "./asset.component";
 import { AssetAddComponent } from "./asset-add/asset-add.component";
@@ -37,14 +33,6 @@ import { Asset2Component } from './asset2/asset2.component';
   imports: [
     AssetRoutingModule,
     HttpClientModule, 
-
-    // InMemoryWebApiModule.forRoot(AppData, { delay: 1000 }),
-
-    // environment.production ? [] :
-    // InMemoryWebApiModule.forRoot(AppData, {
-    //   dataEncapsulation: false,
-    //   delay: 1000,
-    //   passThruUnknownUrl: true }),
 
     HttpClientJsonpModule,
     ReactiveFormsModule,

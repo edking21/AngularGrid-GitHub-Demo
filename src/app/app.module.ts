@@ -34,7 +34,8 @@ import { environment } from '../environments/environment';
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule, 
-    
+
+    environment.production ? [] :
     InMemoryWebApiModule.forRoot(AppData, {
       dataEncapsulation: false,
       delay: 1000,
