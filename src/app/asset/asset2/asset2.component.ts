@@ -1,30 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { EMPTY } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Asset2Service} from './asset2.service';
-import { Asset } from '../asset';
 
 @Component({
   selector: 'app-asset2',
   templateUrl: './asset2.component.html',
-  styleUrls: ['./asset2.component.scss']
+  styleUrls: ['./asset2.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Asset2Component implements OnInit {
+export class Asset2Component  {
+  pageTitle = 'Asset List';
   errorMessage = '';
-  assets: Asset[] = [];  
-  sub: Subscription;
+  categories;
 
-  constructor( private asset2Service: Asset2Service, ) { }
+  assets$ = this.asset2Service.assets$
+    .pipe(
+      catchError(err => {
+        this.errorMessage = err;
+        return EMPTY;
+      })
+    );
 
-  ngOnInit(): void {
-    this.sub = this.asset2Service.getAssets()
-      .subscribe(
-        assets => this.assets = assets,
-        error => this.errorMessage = error
-      )
-  }
+  constructor( private asset2Service: Asset2Service ) { }
 
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
+
 
 }

@@ -8,18 +8,17 @@ import { Asset } from './../asset';
   providedIn: 'root'
 })
 export class Asset2Service {
+  private assetsUrl = 'api/assets';
+  
+  assets$ = this.http.get<Asset[]>(this.assetsUrl)
+    .pipe(
+        tap(data =>console.log('Assets: ', JSON.stringify(data))),
+        catchError(this.handleError)
+    );
 
   constructor(private http: HttpClient) { }
 
-  getAssets(): Observable<Asset[]>{
-    return this.http.get<Asset[]>('api/assets')
-      .pipe(
-        // tap(data => console.log('Assets: ', JSON.stringify(data))),
-        catchError(this.handleError));
-
-  }
-
-    private handleError(err: any) {
+  private handleError(err: any) {
     // in a real world app, we may send the server to some remote logging infrastructure
     // instead of just logging it to the console
     let errorMessage: string;

@@ -1,7 +1,6 @@
 # Angular grid-demo-github
 
-An in-memory web api for Angular demos and tests
-that emulates CRUD operations over a RESTy API.
+An in-memory web api for Angular demos and tests that emulates CRUD operations over a RESTy API.
 
 It intercepts Angular `Http` and `HttpClient` requests that would otherwise go to the remote server and redirects them to an in-memory data store that you control.
 
@@ -15,15 +14,27 @@ Uses a reactive approach by issuing the Common Pattern with an Async Pipe to pop
 
 * Unsubscribes when the component is destroyed.
 
+* Allows change detection feature.  UI is automatically updated with changed data.
+
+## In Memory Data Store
+
+* Optionally calls the in Memory DB when the RESTy API is not available.
+
+* Change between In Memory and REST with a single npm command.
+```ts
+  // for requests to an `api` base URL that gets heroes from a 'heroes' collection 
+  npm run local           // Uses REST and SQL Server for backend data
+  npm run mem             // Uses In Memory Database
+```
+
 ## Use cases
+
+* Error handling used with Async Pipe uses Catch and Replace. User will see mock data when the input data is invalid.
+
+* Change detection will notify when user changes the grid contents.
 
 * Demo apps that need to simulate CRUD data persistence operations without a real server.
 You won't have to build and start a test server.
-
-* Whip up prototypes and proofs of concept.
-
-* Share examples with the community in a web coding environment such as Plunker or CodePen.
-Create Angular issues and StackOverflow answers supported by live code.
 
 * Simulate operations against data collections that aren't yet implemented on your dev/test server. 
 You can pass requests thru to the dev/test server for collections that are supported.

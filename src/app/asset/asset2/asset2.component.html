@@ -24,7 +24,7 @@
   
       <div class="table-responsive">
         <table class="table mb-0"
-               *ngIf="assets">
+               *ngIf="assets$ | async as assets">
           <thead>
             <tr>
               <th>Product</th>
