@@ -28,60 +28,9 @@ const EXCEL_EXTENSION = '.xlsx';
 export class AssetService implements OnInit {
   private assetsUrl = 'api/assets';
 
-  // All Assets
-  assets$ = this.http.get<Asset[]>(this.assetsUrl)
-    .pipe(
-      map(assets =>
-        assets.map(asset => ({
-          searchKey: [asset.productName]
-        }) as Asset)
-      ),
-      tap(data => console.log('Assets', JSON.stringify(data))),
-      catchError(this.handleError)
-    );
-
-  // Combine products with categories
-  // Map to the revised shape.
-  assetsWithCategory$ = combineLatest([
-    this.assets$,
-    this.assetCategoryService.assetCategories$
-  ]).pipe(
-    map(([assets, categories]) =>
-      assets.map(asset => ({
-        ...asset,
-        price: asset.price * 1.5,
-        category: categories.find(c => asset.categoryId === c.id).name,
-        searchKey: [asset.productName]
-      }) as Asset)
-    ),
-    shareReplay(1)
-  );
-  
-  /*
-    Allows adding of products to the Observable
-  */
-
-  // Action Stream
-  private assetInsertedSubject = new Subject<Asset>();
-  assetInsertedAction$ = this.assetInsertedSubject.asObservable();
-
-  // Merge the streams
-  assetsWithAdd$ = merge(
-    this.assetsWithCategory$,
-    this.assetInsertedAction$
-  )
-    .pipe(
-      scan((acc: Asset[], value: Asset) => [...acc, value]),
-      catchError(err => {
-        console.error(err);
-        return throwError(err);
-      })
-    );
 
   constructor(
-    private http: HttpClient,
-    private assetCategoryService: AssetCategoryService,
-    private supplierService: SupplierService
+    private http: HttpClient
   ) { }
 
   private market = new BehaviorSubject<number>(null);

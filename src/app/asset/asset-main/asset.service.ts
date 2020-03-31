@@ -1,25 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
 import { Asset } from './../asset';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class Asset2Service {
+export class AssetService {
+  assets$ = this.http.get<Asset[]>(environment.serverPath + environment.assetUrl )
+    .pipe(
+      // tap(data => console.log('Assets: ', JSON.stringify(data))),
+      catchError(this.handleError)
+    );
 
   constructor(private http: HttpClient) { }
 
-  getAssets(): Observable<Asset[]>{
-    return this.http.get<Asset[]>('api/assets')
-      .pipe(
-        // tap(data => console.log('Assets: ', JSON.stringify(data))),
-        catchError(this.handleError));
-
-  }
-
-    private handleError(err: any) {
+  private handleError(err: any) {
     // in a real world app, we may send the server to some remote logging infrastructure
     // instead of just logging it to the console
     let errorMessage: string;

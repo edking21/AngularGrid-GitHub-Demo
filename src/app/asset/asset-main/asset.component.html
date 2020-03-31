@@ -24,23 +24,25 @@
   
       <div class="table-responsive">
         <table class="table mb-0"
-               *ngIf="assets">
+               *ngIf="assets$ | async as assets">
           <thead>
             <tr>
-              <th>Product</th>
-              <th>Code</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>In Stock</th>
+              <th>MarketId</th>
+              <th>FacilityId</th>
+              <th>Make</th>
+              <th>Model</th>
+              <th>StatusId</th>
+              <th>Asset Status</th>
             </tr>
           </thead>
           <tbody *ngFor="let asset of assets ">
             <tr>
-              <td>{{ asset.productName }}</td>
-              <td>{{ asset.productCode }}</td>
-              <td>{{ asset.categoryId }}</td>
-              <td>{{ asset.price | currency:"USD":"symbol":"1.2-2" }}</td>
-              <td>{{ asset.quantityInStock }}</td>
+              <td>{{ asset.marketId }}</td>
+              <td>{{ asset.facilityId}}</td>
+              <td>{{ asset.make}}</td>
+              <td>{{ asset.model}}</td>
+              <td>{{ asset.statusId }}</td>
+              <td>{{ asset.assetStatus}}</td>
             </tr>
           </tbody>
         </table>
