@@ -22,7 +22,7 @@ Uses a reactive approach by issuing the Common Pattern with an Async Pipe to pop
 
 * Change between In Memory and REST with a single npm command.
 ```ts
-  // for requests to an `api` base URL that gets heroes from a 'heroes' collection 
+  // develop the In Memory or REST backend data provider.
   npm run local           // Uses REST and SQL Server for backend data
   npm run mem             // Uses In Memory Database
 ```
