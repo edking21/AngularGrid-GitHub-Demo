@@ -11,25 +11,41 @@ import { InputsModule } from "@progress/kendo-angular-inputs";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { ToastrModule } from 'ngx-toastr';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { DialogModule }  from '@progress/kendo-angular-dialog';
+import { DialogModule } from '@progress/kendo-angular-dialog';
 import { GridModule } from "@progress/kendo-angular-grid";
 import { ExcelExportModule } from '@progress/kendo-angular-excel-export';
-import { HttpClientModule} from '@angular/common/http';
-import { HttpClientJsonpModule} from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
+
+// Imports for loading & configuring the in-memory web api
+// import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+// import { AppData } from './app-data';
+
+import { HttpClientJsonpModule } from '@angular/common/http';
 import { AssetComponent } from "./asset.component";
 import { AssetAddComponent } from "./asset-add/asset-add.component";
 import { AssetEditComponent } from './asset-edit/asset-edit.component';
 import { ArraySortPipe } from '../pipes/array-sort-pipe.pipe';
-import { AssetRoutingModule} from "./asset-routing.module";
+import { AssetRoutingModule } from "./asset-routing.module";
 import { AuthInterceptor } from '../headers.service';
 import { AssetFacilityComponent } from './asset-facility/asset-facility.component';
 import { AddEditAssettypeComponent } from './add-edit-assettype/add-edit-assettype.component';
 import { AddEditDropdownsComponent } from './add-edit-dropdowns/add-edit-dropdowns.component';
+import { environment } from '../../environments/environment';
+import { Asset2Component } from './asset2/asset2.component';
 
 @NgModule({
   imports: [
     AssetRoutingModule,
-    HttpClientModule,
+    HttpClientModule, 
+
+    // InMemoryWebApiModule.forRoot(AppData, { delay: 1000 }),
+
+    // environment.production ? [] :
+    // InMemoryWebApiModule.forRoot(AppData, {
+    //   dataEncapsulation: false,
+    //   delay: 1000,
+    //   passThruUnknownUrl: true }),
+
     HttpClientJsonpModule,
     ReactiveFormsModule,
     CommonModule,
@@ -49,6 +65,7 @@ import { AddEditDropdownsComponent } from './add-edit-dropdowns/add-edit-dropdow
   declarations: [
     AssetAddComponent,
     AssetComponent,
+    Asset2Component,
     AssetEditComponent,
     ArraySortPipe,
     AssetFacilityComponent,
@@ -66,10 +83,10 @@ import { AddEditDropdownsComponent } from './add-edit-dropdowns/add-edit-dropdow
     // DialogService,
     AuthInterceptor,
     {
-      provide:HTTP_INTERCEPTORS,
+      provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi:true
-    } 
+      multi: true
+    }
   ]
 })
-export class AssetModule {}
+export class AssetModule { }

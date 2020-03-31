@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 import { AssetCategoryService } from '../asset-categories/asset-category.service';
 
 import { AssetInfo } from "../models/AssetInfo";
+import { Asset } from '../asset/asset'
 import { State, toDataSourceRequest } from "@progress/kendo-data-query";
 import { AutoCompleteComponent } from '@progress/kendo-angular-dropdowns';
 import { GridColumn } from "../models/GridColumn";
@@ -34,27 +35,37 @@ export class AssetComponent implements OnInit {
   pageTitle = 'Asset List';
   private errorMessageSubject = new Subject<string>();
   errorMessage$ = this.errorMessageSubject.asObservable();
+  errorMessage = '';
 
   // Action stream
   private categorySelectedSubject = new BehaviorSubject<number>(0);
   categorySelectedAction$ = this.categorySelectedSubject.asObservable();
 
-  // Merge Data stream with Action stream
-  // To filter to the selected category
-  assets$ = combineLatest([
-    this.assetService.assetsWithAdd$,
-    this.categorySelectedAction$
-  ])
+
+  assets$ = this.assetService.assets$
     .pipe(
-      map(([assets, selectedCategoryId]) =>
-        assets.filter(product =>
-          selectedCategoryId ? product.categoryId === selectedCategoryId : true
-        )),
       catchError(err => {
-        this.errorMessageSubject.next(err);
+        this.errorMessage = err;
         return EMPTY;
       })
     );
+
+  // Merge Data stream with Action stream
+  // To filter to the selected category
+  // assets$ = combineLatest([
+  //   this.assetService.assetsWithAdd$,
+  //   this.categorySelectedAction$
+  // ])
+  //   .pipe(
+  //     map(([assets, selectedCategoryId]) =>
+  //       assets.filter(product =>
+  //         selectedCategoryId ? product.categoryId === selectedCategoryId : true
+  //       )),
+  //     catchError(err => {
+  //       this.errorMessageSubject.next(err);
+  //       return EMPTY;
+  //     })
+  //   );
 
   // // Categories for drop down list
   categories$ = this.assetCategoryService.assetCategories$
@@ -486,9 +497,17 @@ export class AssetComponent implements OnInit {
   public isHidden(columnName: string): boolean {
     return this.hiddenColumns.indexOf(columnName) > -1;
   }
+  
+  sub: Subscription;
 
   ngOnInit() {
-    this.GetMarket();
+    this.sub = this.assetService.GetAssets(this.currentUser, this.marketId)
+      .subscribe(
+        assets => this.assets = assets,
+        error => this.errorMessage$ = error
+      )
+    // this.GetAssets();
+    // this.GetMarket();
   }
 
   public GetMarket() {
@@ -498,10 +517,10 @@ export class AssetComponent implements OnInit {
         this.assetService.SetTheMarket(market)
         //These calls must be here due to dependencies on GetMarket returning the MarketId from the DB.
         this.GetAssets();
-        this.GetUsers(this.marketId, false);
-        this.GetAssetTypes();
-        this.GetAssetManagers(this.marketId, false);
-        this.GetFacilityList(this.marketId);
+        // this.GetUsers(this.marketId, false);
+        // this.GetAssetTypes();
+        // this.GetAssetManagers(this.marketId, false);
+        // this.GetFacilityList(this.marketId);
       });
   }
 
@@ -537,23 +556,28 @@ export class AssetComponent implements OnInit {
     }
   }
 
+  asset2: any[] = [];
+
   GetAssets() {
     this.assetService.GetAssets(this.currentUser, this.marketId)
       .subscribe(
-        (assets: AssetInfo[]) => {
-          this.FormatDates(assets);
-          this.assets = assets;
-          this.gridData = this.assets;
-          for (let indx of Object.keys(this.assets[0])) {
-            this.columns.push({
-              field: indx,
-              title: this.GetTitle(indx),
-              hidden: false
-            });
-          }
-          //filter data if searchtext is set
-          this.handleSearchFilter(this.searchText);
-        });
+        assets => this.asset2 = assets,
+        error => this.errorMessage$ = error
+        // (assets: AssetInfo[]) => {
+        //   this.FormatDates(assets);
+        //   this.assets = assets;
+        //   this.gridData = this.assets;
+        //   for (let indx of Object.keys(this.assets[0])) {
+        //     this.columns.push({
+        //       field: indx,
+        //       title: this.GetTitle(indx),
+        //       hidden: false
+        //     });
+        //   }
+        //   //filter data if searchtext is set
+        //   this.handleSearchFilter(this.searchText);
+        // }
+        );
   }
 
 

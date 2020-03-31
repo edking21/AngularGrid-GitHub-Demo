@@ -2,7 +2,7 @@ import { Asset } from './asset';
 
 export class AssetData {
 
-  static products: Asset[] = [
+  static assets: Asset[] = [
     {
       id: 1,
       productName: 'Leaf Rake',
@@ -24,7 +24,7 @@ export class AssetData {
       supplierIds: [3, 4]
     },
     {
-      id: 5,
+      id: 3,
       productName: 'Hammer',
       productCode: 'TBX-0048',
       description: 'Curved claw steel hammer',
@@ -34,7 +34,7 @@ export class AssetData {
       supplierIds: [5, 6]
     },
     {
-      id: 8,
+      id: 4,
       productName: 'Saw',
       productCode: 'TBX-0022',
       description: '15-inch steel blade hand saw',
@@ -44,7 +44,7 @@ export class AssetData {
       supplierIds: [7, 8]
     },
     {
-      id: 10,
+      id: 5,
       productName: 'Video Game Controller',
       productCode: 'GMG-0042',
       description: 'Standard two-button video game controller',

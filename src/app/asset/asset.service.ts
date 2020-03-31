@@ -6,7 +6,7 @@ import {
   HttpHeaders
 } from "@angular/common/http";
 
-import { BehaviorSubject, combineLatest, EMPTY, from, merge, Subject, throwError, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, from, merge, Subject, throwError, of, Observable } from 'rxjs';
 import { catchError, filter, map, mergeMap, scan, shareReplay, tap, toArray, switchMap } from 'rxjs/operators';
 
 import { environment } from "../../environments/environment";
@@ -19,10 +19,10 @@ import { dateFieldName } from "@telerik/kendo-intl";
 import { AssetHistory } from "../models/AssetHistory";
 import { Asset } from './asset';
 import { AssetCategoryService } from '../asset-categories/asset-category.service';
+import { SupplierService } from '../suppliers/supplier.service';
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
-
 
 @Injectable()
 export class AssetService implements OnInit {
@@ -31,7 +31,12 @@ export class AssetService implements OnInit {
   // All Assets
   assets$ = this.http.get<Asset[]>(this.assetsUrl)
     .pipe(
-      tap(data => console.log('Products', JSON.stringify(data))),
+      map(assets =>
+        assets.map(asset => ({
+          searchKey: [asset.productName]
+        }) as Asset)
+      ),
+      tap(data => console.log('Assets', JSON.stringify(data))),
       catchError(this.handleError)
     );
 
@@ -75,7 +80,8 @@ export class AssetService implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private assetCategoryService: AssetCategoryService
+    private assetCategoryService: AssetCategoryService,
+    private supplierService: SupplierService
   ) { }
 
   private market = new BehaviorSubject<number>(null);
@@ -90,7 +96,15 @@ export class AssetService implements OnInit {
   announceAssetAdd(assetElements: AssetElement[]) {
     this.assetAddAnnouncedSources.next(assetElements);
   }
-
+  
+  getProducts(): Observable<Asset[]> {
+    return this.http.get<Asset[]>('api/products')
+      .pipe(
+        tap(data => console.log('Products: ', JSON.stringify(data))),
+        catchError(this.handleError)
+      );
+  }
+  
   ngOnInit() { }
 
   GetTheMarket() {
@@ -102,11 +116,12 @@ export class AssetService implements OnInit {
 
   }
 
+  // .get(environment.serverPath + environment.marketUrl, { params })
   GetMarket(createdBy: string) {
     const params = new HttpParams()
       .set("CreatedBy", createdBy.toString())
     return this.http
-      .get(environment.serverPath + "api/asset/getmarket", { params })
+      .get(environment.serverPath + environment.marketUrl, { params })
       .pipe(catchError(this.handleError));
   }
 
@@ -130,14 +145,18 @@ export class AssetService implements OnInit {
       .pipe(catchError(this.handleError));
   }
 
-  GetAssets(createdBy: string, marketId: number) {
+
+  SERVER_URL: string = "http://localhost:8080/api/";
+
+  GetAssets(createdBy: string, marketId: number): Observable<any[]> {
     const params = new HttpParams()
       .set("CreatedBy", createdBy.toString())
       .set("MarketId", marketId.toString());
 
-    return this.http.get<AssetInfo[]>(environment.serverPath + "api/asset/assets", { params })
+      // return this.http.get<AssetInfo[]>(environment.serverPath + environment.assetUrl, { params })
+      return this.http.get<any[]>('api/assets/2', { params })
       .pipe(
-        // tap(data => console.log('Assets: ', JSON.stringify(data))),
+        tap(data => console.log('Assets: ', JSON.stringify(data))),
         catchError(this.handleError));
   }
 

@@ -1,6 +1,8 @@
 export const environment = {  
-    production: false,
+    production: true,
     envName: 'local',
+    assetUrl: 'api/asset/assets',
+    marketUrl: 'api/asset/getMarket',
     serverPath:'http://localhost:57276/',
     tokenIssuerClient: "http://localhost:57276/",
     tokenIssuerPath: "http://localhost:57276/"
